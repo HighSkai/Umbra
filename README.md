@@ -327,4 +327,5 @@ packaging/      install.sh and the systemd unit
 ## License
 
 [MIT](LICENSE). Bundled: [htmx](https://htmx.org) (0BSD), [Lucide](https://lucide.dev)
-icons (ISC) and [Geist Mono](https://vercel.com/font) (SIL OFL 1.1).
+icons (ISC) and [Geist Mono](https://vercel.com/font) (SIL OFL 1.1); see
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

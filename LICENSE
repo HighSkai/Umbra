@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Bundled third-party files keep their own licenses:
-
-- web/vendor/htmx-2.0.11.min.js: htmx, Zero-Clause BSD (web/vendor/LICENSE-htmx.txt)
-- web/icons/*.svg: Lucide icons, ISC (web/icons/LICENSE-lucide.txt)
-- web/fonts/geist-mono-latin-wght.woff2: Geist Mono, SIL Open Font License 1.1 (web/fonts/LICENSE-geist-mono.txt)
