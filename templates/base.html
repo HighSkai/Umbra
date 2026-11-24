@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080e">
+<meta name="htmx-config" content='{"allowEval":false,"includeIndicatorStyles":false,"historyCacheSize":0,"selfRequestsOnly":true,"scrollIntoViewOnBoost":false}'>
+<title>{{ chrome.title }} · Umbra</title>
+<link rel="icon" href="{{ chrome.favicon }}" type="image/svg+xml">
+<link rel="preload" href="{{ chrome.font }}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ chrome.css }}">
+<script src="{{ chrome.js }}" defer></script>
+</head>
+<body data-mood="{{ chrome.mood }}" data-page="{{ chrome.page }}" data-live-js="{{ chrome.live_js }}"{% if chrome.page != "login" %} data-sse="1"{% endif %} hx-headers='{{ chrome.csrf_header() }}'>
+<div class="ambient" aria-hidden="true"><div class="glow glow-a"></div><div class="glow glow-b"></div><div class="glow glow-c"></div><div class="glow glow-warn"></div><div class="glow glow-alert"></div></div>
+<a class="skip" href="#main">Skip to content</a>
+{% block body %}{% endblock %}
+<div id="toasts" class="toasts" aria-live="polite"></div>
+{% if chrome.page != "login" %}
+<dialog id="palette" class="palette" aria-label="Command palette">
+  <div class="palette-search">{{ self.icon("search")|safe }}<input id="palette-q" type="text" placeholder="Jump to a device, wake a computer, open settings…" autocomplete="off" spellcheck="false" aria-controls="palette-list"></div>
+  <ul id="palette-list" class="palette-list" role="listbox"></ul>
+  <p class="palette-hint small"><kbd>↑</kbd><kbd>↓</kbd> move <kbd>Enter</kbd> run <kbd>Esc</kbd> close</p>
+</dialog>
+<script id="palette-data" type="application/json">{{ chrome.palette|safe }}</script>
+{% endif %}
+</body>
+</html>

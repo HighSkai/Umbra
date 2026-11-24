@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block body %}
+{% include "partials/header.html" %}
+<main id="main" class="page page-stats">
+  <nav class="crumbs"><a href="/">{{ self.icon("arrow-left")|safe }}<span>Dashboard</span></a></nav>
+  <div class="page-head"><h1>Debug stats</h1><span class="muted small mono">{{ st.platform }}</span></div>
+  <section class="grid-stats">
+    <article class="panel stat {% if st.cpu_ok %}stat-ok{% else %}stat-bad{% endif %}">
+      <span class="stat-label">CPU</span><span class="stat-value mono">{{ st.cpu }}</span>
+      <span class="small muted">{{ st.cpu_window }} · budget &lt; 0.5% · since start {{ st.cpu_avg }}</span>
+    </article>
+    <article class="panel stat {% if st.rss_ok %}stat-ok{% else %}stat-bad{% endif %}">
+      <span class="stat-label">Memory (RSS)</span><span class="stat-value mono">{{ st.rss }}</span>
+      <span class="small muted">budget &lt; 20 MB · private {{ st.private }} · threads {{ st.threads }}</span>
+    </article>
+    <article class="panel stat">
+      <span class="stat-label">Checks per minute</span><span class="stat-value mono">{{ st.checks_per_min }}</span>
+      <span class="small muted">{{ st.checks_total }} since start · {{ st.targets }} targets</span>
+    </article>
+    <article class="panel stat">
+      <span class="stat-label">Uptime</span><span class="stat-value mono">{{ st.uptime }}</span>
+      <span class="small muted">{{ st.requests }} requests · {{ st.sse }} live tab{% if st.sse != 1 %}s{% endif %}</span>
+    </article>
+    <article class="panel stat">
+      <span class="stat-label">Database</span><span class="stat-value mono">{{ st.db_size }}</span>
+      <span class="small muted">{% for (k, v) in st.rows %}{{ k }} {{ v }}{% if !loop.last %} · {% endif %}{% endfor %}</span>
+    </article>
+    <article class="panel stat">
+      <span class="stat-label">Alerts waiting</span><span class="stat-value mono">{{ st.pending_alerts }}</span>
+      <span class="small muted">secrets: {{ st.secrets }}</span>
+    </article>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><h2>Helper runs</h2><span class="muted small">Python processes for Ring and Blink, newest first</span></div>
+    {% if st.helpers.is_empty() %}<p class="muted">None yet.</p>{% else %}
+    <div class="table-wrap"><table class="table"><thead><tr><th>Helper</th><th>When</th><th>Took</th><th>Result</th></tr></thead><tbody>
+    {% for h in st.helpers %}<tr><td class="mono">{{ h.what }}</td><td class="mono">{{ h.when }}</td><td class="mono">{{ h.ms }}</td><td>{% if h.ok %}<span class="tone-ok">ok</span>{% else %}<span class="tone-bad">failed</span>{% endif %} <span class="muted small">{{ h.note }}</span></td></tr>{% endfor %}
+    </tbody></table></div>
+    {% endif %}
+  </section>
+  {% if !st.live.is_empty() %}
+  <section class="panel"><div class="panel-head"><h2>Live views open</h2></div><ul class="plain">{% for l in st.live %}<li class="mono small">{{ l }}</li>{% endfor %}</ul></section>
+  {% endif %}
+  <p class="muted small">Raw numbers as JSON: <a class="mono" href="/debug/stats.json">/debug/stats.json</a></p>
+</main>
+{% endblock %}

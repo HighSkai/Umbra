@@ -1,0 +1,13 @@
+<header id="hdr" class="topbar" hx-get="/partials/header" hx-trigger="umbra:changed from:body" hx-swap="outerHTML" data-title="{{ header.verdict }}">
+  <a class="brand" href="/" aria-label="Umbra, dashboard">
+    <span class="orb-wrap">{{ header.orb|safe }}</span>
+    <span class="brand-text"><span class="wordmark">umbra</span><strong class="verdict tone-{{ header.tone }}">{{ header.verdict }}</strong></span>
+  </a>
+  <nav class="chips" aria-label="Status summary">
+    {% for c in header.chips %}<a class="chip chip-{{ c.tone }}" href="{{ c.href }}" aria-label="{{ c.label }}: {{ c.value }}">{{ self.icon(c.icon)|safe }}<span class="chip-label">{{ c.label }}</span><span class="chip-value mono"{% if let Some(l) = c.lat %} data-lat="{{ l }}"{% endif %}>{{ c.value }}</span></a>{% endfor %}
+  </nav>
+  <div class="top-actions">
+    <button class="icon-btn" type="button" data-palette-open aria-label="Open the command palette (Ctrl+K)">{{ self.icon("command")|safe }}<kbd class="hide-sm">Ctrl K</kbd></button>
+    <a class="icon-btn" href="/settings" aria-label="Settings">{{ self.icon("settings")|safe }}</a>
+  </div>
+</header>

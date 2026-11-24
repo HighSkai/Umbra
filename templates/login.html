@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+<main id="main" class="page page-login">
+  <div class="panel login-card">
+    <div class="login-orb">{{ self.orb()|safe }}</div>
+    <h1 class="wordmark wordmark-lg">umbra</h1>
+    <p class="muted small">{{ chrome.site }} status board</p>
+    {% if setup_needed %}
+    <div class="stack">
+      <p>Set a password first. On the server, run:</p>
+      <pre class="code mono">sudo -u umbra umbra set-password -c /etc/umbra/umbra.toml</pre>
+      <p class="muted small">Then reload this page.</p>
+    </div>
+    {% else %}
+    <form method="post" action="/login" class="stack">
+      {% if let Some(e) = error %}<p class="form-error" role="alert">{{ e }}</p>{% endif %}
+      <label class="field"><span>Password</span><input type="password" name="password" autocomplete="current-password" autofocus required></label>
+      <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

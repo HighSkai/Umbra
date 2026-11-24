@@ -1,0 +1,112 @@
+<main id="main" class="page" hx-get="/partials/live" hx-trigger="umbra:changed from:body" hx-swap="outerHTML">
+{{ live.heat_defs|safe }}
+<section class="grid-hero">
+  <article class="panel panel-map" aria-labelledby="map-title">
+    <div class="panel-head">
+      <h2 id="map-title">Home map</h2>
+      <div class="path-summary small">{% for (label, st) in live.path_summary %}<span class="dot-label"><i class="dot dot-{{ st }}"></i>{{ label }}</span>{% endfor %}</div>
+    </div>
+    <div class="map-wrap">{{ live.map|safe }}</div>
+  </article>
+
+  <article class="panel panel-heat" aria-labelledby="heat-title">
+    <div class="panel-head">
+      <h2 id="heat-title">Last 24 hours</h2>
+      <div class="legend small"><span><i class="key h-up"></i>Up</span><span><i class="key h-dip"></i>Blips</span><span><i class="key h-bad"></i>Rough</span><span><i class="key h-down"></i>Down</span></div>
+    </div>
+    <div class="heat-rows">
+      {% for r in live.heat %}<a class="heat-row" href="{{ r.href }}"><span class="heat-name">{{ r.name }}</span><span class="heat-cell">{{ r.strip|safe }}</span><span class="heat-pct mono">{{ r.uptime }}</span></a>{% endfor %}
+    </div>
+    <div class="axis-row"><span class="heat-name"></span><div class="axis mono">{% for (left, label) in live.heat_hours %}<span style="left:{{ left }}">{{ label }}</span>{% endfor %}</div><span class="heat-pct"></span></div>
+  </article>
+
+  <div class="col col-devices" id="devices">
+    {% if live.groups.is_empty() %}
+    <article class="panel panel-empty">
+      <div class="empty-icon">{{ self.icon("radio")|safe }}</div>
+      <h2>No devices yet</h2>
+      <p class="muted">Add your computers, cameras, TV and the rest in Settings. A name and an IP address are enough; MAC addresses for Wake-on-LAN can come later.</p>
+      <a class="btn btn-primary" href="/settings#add-device">{{ self.icon("plus")|safe }}<span>Add a device</span></a>
+    </article>
+    {% endif %}
+    {% for g in live.groups %}
+    <article class="panel panel-group">
+      <div class="panel-head"><h2>{{ g.title }}</h2><span class="count mono">{{ g.cards.len() }}</span></div>
+      <ul class="cards">
+        {% for c in g.cards %}
+        <li><a class="card status-{{ c.status }}" href="/device/{{ c.id }}">
+          <span class="card-icon">{{ c.icon|safe }}<i class="dot dot-{{ c.status }}" title="{{ c.status_label }}"></i></span>
+          <span class="card-main"><span class="card-name">{{ c.name }}</span><span class="card-sub mono">{{ c.sub }}</span></span>
+          <span class="card-metric mono" data-lat="{{ c.id }}">{{ c.metric }}</span>
+          <span class="card-spark">{{ c.spark|safe }}</span>
+        </a></li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="grid-lower">
+  <article class="panel panel-door" id="front-door" aria-labelledby="door-title">
+    <div class="panel-head"><h2 id="door-title">Front door</h2><span class="muted small">{% for src in live.door.sources %}{% if src.connected %}<span class="src-note">{{ src.title }} {{ src.checked }}</span>{% endif %}{% endfor %}{% if !live.door.any_connected %}Ring · Blink{% endif %}</span></div>
+    {% for src in live.door.sources %}{% if let Some(b) = src.banner %}
+    <a class="banner banner-{{ src.banner_tone }}" href="/settings#integ-{{ src.name }}">{{ self.icon("triangle-alert")|safe }}<span>{{ b }}</span></a>
+    {% endif %}{% endfor %}
+    {% if !live.door.any_connected %}
+    <p class="muted">Connect Ring and Blink to see the doorbell and cameras here: online status, signal, last ding and last motion, with live view on demand.</p>
+    <a class="btn" href="/settings#cameras">{{ self.icon("cctv")|safe }}<span>Connect cameras</span></a>
+    {% else %}
+    <div class="cams">
+      {% for src in live.door.sources %}{% for c in src.cameras %}
+      <div class="cam">
+        <div class="cam-head">
+          <span class="cam-icon">{% if c.doorbell %}{{ self.icon("bell-ring")|safe }}{% else %}{{ self.icon("cctv")|safe }}{% endif %}</span>
+          <span class="cam-title"><strong>{{ c.name }}</strong><span class="muted small">{{ src.title }}{% if !c.model.is_empty() %} · {{ c.model }}{% endif %}</span></span>
+          <span class="pill pill-{{ c.online }}"><i class="dot dot-{{ c.online }}"></i>{{ c.online_label }}</span>
+        </div>
+        {% if let Some(u) = c.snapshot_url %}<figure class="cam-snap"><img src="{{ u }}" alt="Latest snapshot from {{ c.name }}" loading="lazy"><figcaption class="small mono">{{ c.snapshot_when }}</figcaption></figure>{% endif %}
+        <dl class="facts">
+          {% if c.doorbell %}<div><dt>Last ding</dt><dd class="mono">{{ c.last_ding }}</dd></div>{% endif %}
+          <div><dt>Last motion</dt><dd class="mono">{{ c.last_motion }}</dd></div>
+          {% if !c.power.is_empty() %}<div><dt>Power</dt><dd>{{ c.power }}</dd></div>{% endif %}
+          {% if !c.wifi.is_empty() %}<div><dt>Wi-Fi</dt><dd class="mono">{{ c.wifi }}</dd></div>{% endif %}
+          {% if !c.armed.is_empty() %}<div><dt>Motion detection</dt><dd>{{ c.armed }}</dd></div>{% endif %}
+        </dl>
+        <div class="cam-actions">
+          {% if c.can_live %}<button class="btn btn-small" type="button" data-live="{{ c.source }}" data-device="{{ c.id }}" data-name="{{ c.name }}">{{ self.icon("video")|safe }}<span>Live</span></button>{% endif %}
+          {% if c.can_snapshot %}<button class="btn btn-small btn-ghost" type="button" hx-post="/cameras/blink/{{ c.id }}/snapshot" hx-target="#toasts" hx-swap="afterbegin" hx-disabled-elt="this">{{ self.icon("camera")|safe }}<span>Snapshot</span></button>{% endif %}
+        </div>
+      </div>
+      {% endfor %}{% endfor %}
+    </div>
+    <div class="timeline" aria-label="Rings and motion in the last 24 hours">
+      <div class="tl-track">{% for e in live.door.events %}<span class="tl-ev tl-{{ e.kind }}" style="left:{{ e.left }}" title="{{ e.title }}"></span>{% endfor %}</div>
+      <div class="axis mono">{% for (left, label) in live.door.hours %}<span style="left:{{ left }}">{{ label }}</span>{% endfor %}</div>
+      <div class="legend small"><span><i class="key tl-ding"></i>Ding</span><span><i class="key tl-motion"></i>Motion</span></div>
+    </div>
+    {% endif %}
+  </article>
+
+  <article class="panel panel-server" id="server" aria-labelledby="server-title">
+    <div class="panel-head"><h2 id="server-title">This server</h2><span class="muted small"><span class="mono">{{ live.server.hostname }}</span> · {{ live.server.os }}</span></div>
+    <dl class="facts facts-grid">
+      <div><dt>Power</dt><dd class="tone-{{ live.server.power_tone }}">{{ live.server.power }}</dd></div>
+      <div><dt>Battery</dt><dd>{{ live.server.battery }}</dd></div>
+      <div><dt>Battery health</dt><dd>{{ live.server.health }}</dd></div>
+      <div><dt>CPU temperature</dt><dd>{{ live.server.temp }}</dd></div>
+      <div><dt>Disk</dt><dd>{{ live.server.disk }}</dd></div>
+      <div><dt>Uptime</dt><dd>{{ live.server.uptime }}</dd></div>
+    </dl>
+    {% if !live.alerts_ready %}<p class="hint small">Alerts aren't set up, so a power outage would only show here. <a href="/settings#alerts">Send alerts to your phone or Discord</a>.</p>{% endif %}
+  </article>
+
+  <article class="panel panel-thermo" id="thermostat" aria-labelledby="thermo-title">
+    <div class="panel-head"><h2 id="thermo-title">Thermostat</h2><span class="muted small">Matter, coming next</span></div>
+    <div class="thermo-empty">
+      <span class="thermo-icon">{{ self.icon("thermometer")|safe }}</span>
+      <p class="muted small">Not connected. Matter-certified thermostats can be read locally, without the maker's cloud, once paired with the Matter code on their label. Pairing happens on the same network.</p>
+    </div>
+  </article>
+</section>
+</main>

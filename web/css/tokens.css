@@ -1,0 +1,108 @@
+/* Umbra design tokens. Every color, radius, shadow and spacing value lives
+   here so the whole theme can be retuned from one place. */
+:root {
+  color-scheme: dark;
+
+  /* Ground: near-black with a hint of blue, never pure #000 */
+  --bg: #06080e;
+  --bg-raise: #0a0d16;
+  --panel-solid: #0d111b;
+  --shadow-ink: rgb(1 2 6);
+
+  /* Surfaces float above the glows: slightly lighter, semi-transparent */
+  --surface-1: rgb(15 20 33 / 0.64);
+  --surface-2: rgb(22 28 45 / 0.72);
+  --surface-3: rgb(31 38 60 / 0.78);
+  --surface-hover: rgb(34 43 68 / 0.8);
+  --scrim: rgb(2 4 9 / 0.62);
+  --line: rgb(140 160 205 / 0.08);
+  --line-strong: rgb(140 160 205 / 0.17);
+  --highlight: rgb(255 255 255 / 0.055);
+
+  /* Text: off-white body, muted gray-blue secondary (all AA on panels) */
+  --text: hsl(220 22% 88%);
+  --text-2: hsl(220 15% 69%);
+  --text-3: hsl(222 12% 57%);
+
+  /* Accents: teal/cyan main, violet secondary */
+  --accent: hsl(178 70% 52%);
+  --accent-strong: hsl(182 74% 44%);
+  --accent-ink: hsl(186 80% 9%);
+  --accent-soft: hsl(178 70% 52% / 0.14);
+  --violet: hsl(258 78% 73%);
+
+  /* Status: hard, saturated, only for meaning */
+  --up: hsl(164 68% 48%);
+  --degraded: hsl(38 95% 58%);
+  --down: hsl(6 88% 66%);
+  --cam: hsl(268 86% 75%);
+  --unknown: hsl(220 10% 52%);
+  --up-soft: hsl(164 68% 48% / 0.14);
+  --degraded-soft: hsl(38 95% 58% / 0.14);
+  --down-soft: hsl(6 88% 66% / 0.15);
+  --cam-soft: hsl(268 86% 75% / 0.15);
+
+  /* Atmosphere: soft background glows */
+  --glow-teal: hsl(184 90% 36% / 0.3);
+  --glow-violet: hsl(262 70% 44% / 0.26);
+  --glow-blue: hsl(224 80% 30% / 0.32);
+  --glow-amber: hsl(34 95% 48% / 0.2);
+  --glow-red: hsl(2 85% 48% / 0.22);
+  --noise-opacity: 0.055;
+
+  /* Eclipse orb */
+  --orb: hsl(178 75% 52%);
+  --orb-hi: hsl(170 95% 84%);
+  --orb-lo: hsl(198 80% 28%);
+  --orb-shadow: #04060b;
+
+  /* Heatmap */
+  --heat-none: rgb(255 255 255 / 0.045);
+  --heat-up: hsl(170 62% 44% / 0.5);
+  --heat-dip: hsl(38 95% 58% / 0.55);
+  --heat-bad: hsl(30 95% 56% / 0.88);
+  --heat-down: hsl(6 88% 64%);
+
+  /* Type */
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "SF Pro Text", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --fs-2xs: 10.5px;
+  --fs-xs: 11.5px;
+  --fs-sm: 12.5px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 28px;
+
+  /* Space */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --gutter: 24px;
+
+  /* Shape */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 22px;
+  --r-full: 999px;
+
+  /* Depth: inner top highlight plus soft shadows below, no borders */
+  --shadow-panel: inset 0 1px 0 var(--highlight), 0 0 0 1px rgb(255 255 255 / 0.018), 0 1px 2px rgb(0 0 0 / 0.35), 0 22px 48px -28px rgb(0 0 0 / 0.85);
+  --shadow-raised: inset 0 1px 0 var(--highlight), 0 8px 24px -12px rgb(0 0 0 / 0.7);
+  --shadow-pop: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(255 255 255 / 0.04), 0 30px 70px -20px rgb(0 0 0 / 0.9);
+  --ring-focus: 0 0 0 2px var(--bg), 0 0 0 4px hsl(178 70% 52% / 0.7);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-1: 140ms;
+  --dur-2: 280ms;
+  --dur-orb: 1600ms;
+  --dur-mood: 9s;
+}

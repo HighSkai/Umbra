@@ -1,0 +1,62 @@
+[package]
+name = "umbra"
+version = "0.1.0"
+edition = "2024"
+description = "A tiny self-hosted status board for the devices in your home"
+license = "MIT"
+repository = "https://github.com/HighSkai/Umbra"
+readme = "README.md"
+keywords = ["homelab", "monitoring", "dashboard", "self-hosted", "status"]
+publish = false
+build = "build.rs"
+
+[features]
+default = ["bundled-sqlite"]
+# Compile SQLite into the binary (no system library needed). Turn off with
+# --no-default-features to link the system libsqlite3 instead.
+bundled-sqlite = ["rusqlite/bundled"]
+
+[dependencies]
+tokio = { version = "1", default-features = false, features = ["rt", "macros", "time", "net", "sync", "process", "io-util", "signal"] }
+tokio-stream = { version = "0.1", default-features = false, features = ["sync"] }
+tokio-util = { version = "0.7", default-features = false, features = ["io"] }
+axum = { version = "0.8", default-features = false, features = ["http1", "tokio", "query", "form", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.9"
+rusqlite = "0.37"
+askama = "0.14"
+argon2 = "0.5"
+getrandom = "0.3"
+sha2 = "0.10"
+flate2 = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+socket2 = "0.6"
+chacha20poly1305 = "0.10"
+base64 = "0.22"
+rpassword = "7"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+keyring = { version = "3", features = ["windows-native"] }
+windows-sys = { version = "0.60", features = [
+  "Win32_Foundation",
+  "Win32_NetworkManagement_IpHelper",
+  "Win32_Networking_WinSock",
+  "Win32_System_Power",
+  "Win32_System_Threading",
+  "Win32_System_ProcessStatus",
+  "Win32_Storage_FileSystem",
+  "Win32_System_SystemInformation",
+] }
+
+[build-dependencies]
+flate2 = "1"
+
+[profile.release]
+opt-level = "s"
+lto = "fat"
+codegen-units = 1
+strip = true

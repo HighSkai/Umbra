@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block body %}
+{% include "partials/header.html" %}
+<main id="main" class="page page-device">
+  <nav class="crumbs"><a href="/">{{ self.icon("arrow-left")|safe }}<span>Dashboard</span></a></nav>
+  <section class="panel device-hero">
+    <div class="device-id">
+      <span class="device-icon status-{{ d.status }}">{{ d.icon|safe }}</span>
+      <div>
+        <h1>{{ d.name }}</h1>
+        <p class="muted">{{ d.kind_label }} · <span class="mono">{{ d.host }}</span>{% if !d.resolved.is_empty() %} <span class="mono">→ {{ d.resolved }}</span>{% endif %}</p>
+      </div>
+    </div>
+    <div class="device-status">
+      <span class="pill pill-{{ d.status }}"><i class="dot dot-{{ d.status }}"></i>{{ d.status_label }}</span>
+      <span class="muted small">{{ d.since }}</span>
+    </div>
+    <div class="device-actions">
+      {% if d.can_wake %}<button class="btn" type="button" hx-post="/device/{{ d.id }}/wake" hx-target="#toasts" hx-swap="afterbegin" hx-disabled-elt="this">{{ self.icon("power")|safe }}<span>Wake</span></button>{% endif %}
+      <button class="btn btn-ghost" type="button" hx-post="/device/{{ d.id }}/traceroute" hx-target="#trace" hx-swap="innerHTML" hx-disabled-elt="this"{% if d.auto_trace %} hx-trigger="click, load"{% endif %}>{{ self.icon("route")|safe }}<span>Traceroute</span></button>
+      {% if d.editable %}<a class="btn btn-ghost" href="/settings?edit={{ d.id }}#add-device">{{ self.icon("pencil")|safe }}<span>Edit</span></a>{% endif %}
+    </div>
+  </section>
+
+  <section class="grid-detail">
+    <article class="panel panel-wide">
+      <div class="panel-head"><h2>Latency, last 24 hours</h2><span class="mono small muted">{{ d.chart_range }}</span></div>
+      <div class="chart">{{ d.chart|safe }}</div>
+      <div class="axis mono">{% for (left, label) in d.chart_hours %}<span style="left:{{ left }}">{{ label }}</span>{% endfor %}</div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head"><h2>Right now</h2></div>
+      <dl class="facts facts-grid">
+        <div><dt>Latency</dt><dd class="mono" data-lat="{{ d.id }}">{{ d.latency }}</dd></div>
+        <div><dt>Last seen</dt><dd>{{ d.last_seen }}</dd></div>
+        <div><dt>Loss, last 10 checks</dt><dd class="mono">{{ d.loss }}</dd></div>
+        <div><dt>Checked</dt><dd>{{ d.interval }}</dd></div>
+        {% if !d.mac.is_empty() %}<div><dt>MAC</dt><dd class="mono">{{ d.mac }}</dd></div>{% endif %}
+        {% if !d.tcp.is_empty() %}<div><dt>TCP</dt><dd>{{ d.tcp }}</dd></div>{% endif %}
+        <div><dt>Uptime, 90 days</dt><dd class="mono">{{ d.uptime_90 }}</dd></div>
+      </dl>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head"><h2>Last 7 days</h2></div>
+      {% if d.days.is_empty() %}<p class="muted">No history yet.</p>{% else %}
+      <div class="days">{% for day in d.days %}<div class="day" title="{{ day.label }}: {{ day.pct }} up"><div class="day-bar"><span class="bar-{{ day.cls }}" style="height:{{ day.height }}"></span></div><span class="day-pct mono small">{{ day.pct }}</span><span class="day-label small muted">{{ day.label }}</span></div>{% endfor %}</div>
+      {% endif %}
+    </article>
+
+    <article class="panel">
+      <div class="panel-head"><h2>Outages</h2><span class="muted small">last 90 days</span></div>
+      {% if d.outages.is_empty() %}<p class="muted">None recorded.</p>{% else %}
+      <table class="table"><thead><tr><th>Started</th><th>Ended</th><th>Lasted</th></tr></thead><tbody>
+      {% for o in d.outages %}<tr><td class="mono">{{ o.start }}</td><td class="mono">{{ o.end }}</td><td class="mono">{{ o.dur }}</td></tr>{% endfor %}
+      </tbody></table>
+      {% endif %}
+    </article>
+
+    <article class="panel panel-wide">
+      <div class="panel-head"><h2>Traceroute</h2><span class="muted small">Runs only when you press the button</span></div>
+      <div id="trace"><p class="muted">Shows each hop between this server and {{ d.name }}. It takes up to a minute.</p></div>
+    </article>
+  </section>
+</main>
+{% endblock %}

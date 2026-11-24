@@ -1,0 +1,50 @@
+[Unit]
+Description=Umbra home status board
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=umbra
+Group=umbra
+ExecStart=/usr/local/bin/umbra run --config /etc/umbra/umbra.toml
+Restart=on-failure
+RestartSec=5
+StateDirectory=umbra
+StateDirectoryMode=0750
+ReadWritePaths=/etc/umbra
+
+# Raw-socket ping fallback for distros that disable unprivileged ICMP
+# (net.ipv4.ping_group_range = "1 0", e.g. Debian).
+AmbientCapabilities=CAP_NET_RAW
+CapabilityBoundingSet=CAP_NET_RAW
+
+# The secrets key is added by install.sh as a drop-in
+# (LoadCredentialEncrypted=umbra-key:...), sealed with systemd-creds.
+
+# Everything else is read-only or hidden from the service.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+UMask=0077
+
+# A ceiling for the core plus any helper, ffmpeg or traceroute it starts.
+MemoryMax=384M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target
